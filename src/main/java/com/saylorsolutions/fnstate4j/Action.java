@@ -86,4 +86,9 @@ public class Action {
 	public boolean hasPayload() {
 		return this.payload.isPresent();
 	}
+
+	public Object getPayloadOrNull() {
+		if(hasPayload()) return this.payload.get();
+		return null;
+	}
 }

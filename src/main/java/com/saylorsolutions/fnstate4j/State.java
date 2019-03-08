@@ -18,7 +18,10 @@ public class State {
 	}
 
 	/**
-	 * Merge two states, preferring {@code theirs} in the case of conflicts.
+	 * Merge two states, preferring {@code theirs} in the case of conflicts. Cannot
+	 * time travel before a merge because there are two possible ancestors for any
+	 * given key in the {@code State}.
+	 *
 	 * @param ours
 	 * @param theirs
 	 * @return The merged {@code State}.
@@ -26,7 +29,7 @@ public class State {
 	public static State merge(State ours, State theirs) {
 		Objects.requireNonNull(ours, "Cannot merge null State");
 		Objects.requireNonNull(theirs, "Cannot merge null State");
-		return new State(theirs.innerMap.merge(ours.innerMap), ours);
+		return new State(theirs.innerMap.merge(ours.innerMap), null);
 	}
 
 	public Optional<Object> get(String key) {
@@ -70,7 +73,7 @@ public class State {
 		return this.prevState != null;
 	}
 
-	public State getPreviousState() {
-		return this.prevState;
+	public Optional<State> getPreviousState() {
+		return Optional.ofNullable(this.prevState);
 	}
 }
