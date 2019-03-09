@@ -113,12 +113,17 @@ public class StateTest {
 	}
 
 	private static class A {
-		public A() {}
+		public A() {
+		}
 	}
+
 	private static class B extends A {
-		public B() {}
+		public B() {
+		}
 	}
+
 	private static class C {
-		public C() {}
+		public C() {
+		}
 	}
 }

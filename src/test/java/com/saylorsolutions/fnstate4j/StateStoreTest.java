@@ -35,13 +35,16 @@ import com.saylorsolutions.fnstate4j.func.Reducer;
 public class StateStoreTest {
 	private static final String UPDATED_MESSAGE = "Updated message";
 	private static final Consumer<State> LOGGING_SUBSCRIBER = s -> System.out.println("State updated: " + s);
-	private static final Middleware LOGGING_MIDDLEWARE = (a, s) -> { System.out.println("Received Action: " + a); return true; };
+	private static final Middleware LOGGING_MIDDLEWARE = (a, s) -> {
+		System.out.println("Received Action: " + a);
+		return true;
+	};
 	private StateStore store;
 	private static final String ACTION_TYPE = "TEST";
 	private static final String MESSAGE_STATE = "MESSAGE";
 	private static final Reducer MESSAGE_REDUCER = (a, s) -> {
-		if(a.getType().equals(ACTION_TYPE)) {
-			String message = (String)a.getPayloadOrNull();
+		if (a.getType().equals(ACTION_TYPE)) {
+			String message = (String) a.getPayloadOrNull();
 			return s.put(MESSAGE_STATE, message);
 		}
 		return s;

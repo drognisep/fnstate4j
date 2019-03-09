@@ -96,10 +96,10 @@ public class StateStore {
 	}
 
 	private void internalDispatch(final Action action, final boolean nonBlocking) {
-		if(this.rootMiddleware.process(action, this.state)) {
-			synchronized(this.state) {
+		if (this.rootMiddleware.process(action, this.state)) {
+			synchronized (this.state) {
 				this.state = this.rootReducer.reduce(action, this.state);
-				if(nonBlocking) {
+				if (nonBlocking) {
 					this.subscribers.forEach((u, c) -> executor.execute(() -> c.accept(this.state)));
 				} else {
 					this.subscribers.forEach((u, c) -> c.accept(this.state));
@@ -127,11 +127,13 @@ public class StateStore {
 
 	public void unsubscribe(Consumer<State> subscriber) {
 		Optional<Entry<UUID, Consumer<State>>> entry = findConsumerEntry(subscriber);
-		if(entry.isPresent()) unsubscribe(entry.get().getKey());
+		if (entry.isPresent())
+			unsubscribe(entry.get().getKey());
 	}
 
 	private Optional<Entry<UUID, Consumer<State>>> findConsumerEntry(Consumer<State> subscriber) {
-		Optional<Entry<UUID, Consumer<State>>> existingId = this.subscribers.entrySet().stream().filter(e -> e.getValue().equals(subscriber)).findFirst();
+		Optional<Entry<UUID, Consumer<State>>> existingId = this.subscribers.entrySet().stream()
+				.filter(e -> e.getValue().equals(subscriber)).findFirst();
 		return existingId;
 	}
 
@@ -152,6 +154,7 @@ public class StateStore {
 
 	/**
 	 * Adds a new {@code Reducer} to the chain. Does not allow duplicates.
+	 * 
 	 * @param reducer
 	 */
 	public void addReducer(Reducer reducer) {
@@ -164,6 +167,7 @@ public class StateStore {
 
 	/**
 	 * Removes the specified {@code Reducer} from the chain, if it exists.
+	 * 
 	 * @param reducer
 	 */
 	public void removeReducer(Reducer reducer) {
@@ -176,6 +180,7 @@ public class StateStore {
 
 	/**
 	 * Adds a new {@code Middleware} to the chain. Does not allow duplicates.
+	 * 
 	 * @param middleware
 	 */
 	public void addMiddleware(Middleware middleware) {
@@ -188,6 +193,7 @@ public class StateStore {
 
 	/**
 	 * Removes the specified {@code Middleware} from the chain, if it exists.
+	 * 
 	 * @param middleware
 	 */
 	public void removeMiddleware(Middleware middleware) {

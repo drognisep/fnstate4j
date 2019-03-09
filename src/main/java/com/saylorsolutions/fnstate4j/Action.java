@@ -99,7 +99,8 @@ public class Action {
 	 */
 	public boolean payloadAssignableTo(Class<?> clazz) {
 		Objects.requireNonNull(clazz, "Can't compare the payload Class to a null Class");
-		if (this.clazz == null) return true;
+		if (this.clazz == null)
+			return true;
 		return clazz.isAssignableFrom(this.clazz);
 	}
 
@@ -108,7 +109,8 @@ public class Action {
 	}
 
 	public Object getPayloadOrNull() {
-		if(hasPayload()) return this.payload.get();
+		if (hasPayload())
+			return this.payload.get();
 		return null;
 	}
 

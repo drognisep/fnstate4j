@@ -31,7 +31,9 @@ public class State {
 	private Map<String, Object> innerMap = HashMap.<String, Object>empty();
 	private State prevState = null;
 
-	public State() {}
+	public State() {
+	}
+
 	private State(Map<String, Object> newState, State oldState) {
 		this.innerMap = newState;
 		this.prevState = oldState;
@@ -58,11 +60,12 @@ public class State {
 
 	@SuppressWarnings("unchecked")
 	public <T> Optional<T> get(String key, Class<T> desiredType) {
-		return (Optional<T>)innerMap.get(key).toJavaOptional();
+		return (Optional<T>) innerMap.get(key).toJavaOptional();
 	}
+
 	@SuppressWarnings("unchecked")
 	public <T> T getOrElse(String key, T defaultValue) {
-		return (T)innerMap.getOrElse(key, defaultValue);
+		return (T) innerMap.getOrElse(key, defaultValue);
 	}
 
 	public Object getOrNull(String key) {

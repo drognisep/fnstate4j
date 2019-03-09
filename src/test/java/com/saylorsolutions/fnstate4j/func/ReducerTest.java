@@ -39,7 +39,7 @@ public class ReducerTest {
 	@Before
 	public void setup() {
 		this.increment = (a, s) -> {
-			if(a.getType().equals(actionType)) {
+			if (a.getType().equals(actionType)) {
 				return s.put(stateKey, s.getOrElse(stateKey, Integer.valueOf(0)) + 1);
 			}
 			return s;
@@ -55,7 +55,8 @@ public class ReducerTest {
 
 	@Test
 	public void testReducerCombineCollection() {
-		State reducedState = Reducer.combine(Arrays.asList(new Reducer[] {increment, increment})).reduce(Action.create(actionType), state);
+		State reducedState = Reducer.combine(Arrays.asList(new Reducer[] { increment, increment }))
+				.reduce(Action.create(actionType), state);
 		assertEquals(Integer.valueOf(2), reducedState.getOrElse(stateKey, Integer.valueOf(77)));
 	}
 

@@ -71,19 +71,21 @@ public interface Middleware {
 		Objects.requireNonNull(other, "Cannot merge null middleware");
 
 		return (a, s) -> {
-			if(process(a, s))
+			if (process(a, s))
 				return other.process(a, s);
 			return false;
 		};
 	}
 
-	static Middleware combine(final Middleware first, final Middleware...middlewares) {
-		if(first == null) return NO_OP;
+	static Middleware combine(final Middleware first, final Middleware... middlewares) {
+		if (first == null)
+			return NO_OP;
 		return Arrays.stream(middlewares).filter(m -> m != null).reduce(first, (m1, m2) -> m1.andThen(m2));
 	}
 
 	public static Middleware combine(Collection<Middleware> coll) {
-		if(coll == null) return NO_OP;
+		if (coll == null)
+			return NO_OP;
 		return coll.stream().filter(m -> m != null).reduce(NO_OP, (m1, m2) -> m1.andThen(m2));
 	}
 }

@@ -62,8 +62,8 @@ public class ActionTest {
 	@Test
 	public void testGetOrElse() {
 		Action action = Action.create("Test", new B());
-		B b = action.getPayloadOrElse((B)null);
-		A a = action.getPayloadOrElse((A)null);
+		B b = action.getPayloadOrElse((B) null);
+		A a = action.getPayloadOrElse((A) null);
 		assertNotNull(b);
 		assertNotNull(a);
 	}
@@ -83,9 +83,12 @@ public class ActionTest {
 	}
 
 	private static class A {
-		public A() {}
+		public A() {
+		}
 	}
+
 	private static class B extends A {
-		public B() {}
+		public B() {
+		}
 	}
 }

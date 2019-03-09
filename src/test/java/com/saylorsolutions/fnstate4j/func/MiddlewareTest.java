@@ -19,8 +19,7 @@ package com.saylorsolutions.fnstate4j.func;
  *    limitations under the License.
  * #L%
  */
-
-import static java.lang.String.*;
+import static java.lang.String.format;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -64,9 +63,12 @@ public class MiddlewareTest {
 
 	@Test
 	public void testCombineCollection() {
-		assertFalse(Middleware.combine(Arrays.asList(new Middleware[] {truthy, falsy})).process(testAction, testState));
-		assertFalse(Middleware.combine(Arrays.asList(new Middleware[] {falsy, truthy})).process(testAction, testState));
-		assertTrue(Middleware.combine(Arrays.asList(new Middleware[] {truthy, truthy})).process(testAction, testState));
+		assertFalse(
+				Middleware.combine(Arrays.asList(new Middleware[] { truthy, falsy })).process(testAction, testState));
+		assertFalse(
+				Middleware.combine(Arrays.asList(new Middleware[] { falsy, truthy })).process(testAction, testState));
+		assertTrue(
+				Middleware.combine(Arrays.asList(new Middleware[] { truthy, truthy })).process(testAction, testState));
 	}
 
 	@Test

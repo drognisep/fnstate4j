@@ -40,12 +40,14 @@ public interface Reducer {
 	}
 
 	public static Reducer combine(Reducer first, Reducer... others) {
-		if(first == null) return NO_OP;
+		if (first == null)
+			return NO_OP;
 		return Arrays.stream(others).filter(r -> r != null).reduce(first, (r1, r2) -> r1.andThen(r2));
 	}
 
 	public static Reducer combine(Collection<Reducer> coll) {
-		if(coll == null) return NO_OP;
+		if (coll == null)
+			return NO_OP;
 		return coll.stream().filter(r -> r != null).reduce(NO_OP, (r1, r2) -> r1.andThen(r2));
 	}
 }
