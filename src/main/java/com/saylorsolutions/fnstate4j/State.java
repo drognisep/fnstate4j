@@ -76,4 +76,12 @@ public class State {
 	public Optional<State> getPreviousState() {
 		return Optional.ofNullable(this.prevState);
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		this.innerMap.forEach(t -> sb.append(String.format(", ['%s':'%s']", t._1, t._2)));
+		String mapString = sb.length() > 2 ? sb.substring(2) : sb.toString();
+		return String.format("State [entries='%s']", mapString);
+	}
 }

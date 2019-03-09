@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.saylorsolutions.fnstate4j.Action;
-
 public class ActionTest {
 	@Test
 	public void testCorrectClass() throws Throwable {
@@ -53,7 +51,7 @@ public class ActionTest {
 	@Test(expected = ClassCastException.class)
 	public void testGetOrElseIncompatible() {
 		String s = Action.create("Test", new B()).getPayloadOrElse("Bad Default");
-		fail("Should have thrown an exception");
+		fail("Should have thrown an exception: " + s);
 	}
 
 	@Test

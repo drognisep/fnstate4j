@@ -1,6 +1,7 @@
 package com.saylorsolutions.fnstate4j;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -25,15 +26,19 @@ import com.saylorsolutions.fnstate4j.func.Reducer;
 public class StateStore {
 	private State state = new State();
 	private Reducer rootReducer;
-	private Set<Reducer> reducers;
+	private Set<Reducer> reducers = new HashSet<>();
 	private Middleware rootMiddleware;
-	private Set<Middleware> middlewares;
+	private Set<Middleware> middlewares = new HashSet<>();
 	private Map<UUID, Consumer<State>> subscribers = new HashMap<>();
 	private boolean nonBlocking;
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public StateStore(State initialState, Reducer rootReducer, Middleware rootMiddleware, boolean nonBlocking) {
 		super();
+
+		rootReducer = rootReducer == null ? Reducer.NO_OP : rootReducer;
+		rootMiddleware = rootMiddleware == null ? Middleware.NO_OP : rootMiddleware;
+
 		this.state = initialState;
 		this.rootReducer = rootReducer;
 		this.reducers.add(rootReducer);

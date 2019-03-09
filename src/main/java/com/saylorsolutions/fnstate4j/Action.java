@@ -91,4 +91,9 @@ public class Action {
 		if(hasPayload()) return this.payload.get();
 		return null;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("Action [type='%s', payload='%s']", getType(), getPayloadOrNull());
+	}
 }
