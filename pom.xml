@@ -30,4 +30,28 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.19</version>
+				<configuration>
+					<licenseName>apache</licenseName>
+					<licenseResolver>${project.baseUri}/src/license</licenseResolver>
+					<organizationName>Joseph D. Saylor</organizationName>
+					<inceptionYear>2019</inceptionYear>
+				</configuration>
+				<executions>
+					<execution>
+						<id>first</id>
+						<goals>
+							<goal>update-file-header</goal>
+						</goals>
+						<phase>process-sources</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
