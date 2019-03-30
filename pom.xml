@@ -5,12 +5,28 @@
 	<groupId>com.saylorsolutions</groupId>
 	<artifactId>fnstate4j</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<name>Functional State for Java</name>
 	<description>Creates a Java port of base Redux functionality </description>
+	<url>https://github.com/drognisep/fnstate4j</url>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/drognisep/fnstate4j</url>
+	</scm>
+
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>io.vavr</groupId>
