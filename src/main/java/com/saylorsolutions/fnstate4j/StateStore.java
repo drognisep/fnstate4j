@@ -40,7 +40,7 @@ import com.saylorsolutions.fnstate4j.func.Reducer;
  * {@code Middleware} chains, as well as handling dispatch calls to update the
  * state.
  *
- * @author Doug Saylor <doug@saylorsolutions.com>
+ * @author Doug Saylor (doug at saylorsolutions.com)
  *
  */
 public class StateStore {

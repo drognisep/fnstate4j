@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * An action, used to represent a potential state change in the system.
  *
- * @author Doug Saylor <doug@saylorsolutions.com>
+ * @author Doug Saylor (doug at saylorsolutions.com)
  */
 public class Action {
 	private String type;

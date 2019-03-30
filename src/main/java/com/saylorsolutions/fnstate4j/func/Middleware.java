@@ -30,15 +30,13 @@ import com.saylorsolutions.fnstate4j.State;
 /**
  * Used to pre-process {@code Action}s that are dispatched to the
  * {@code StateStore}. The {@code process} method can cencel further processing
- * of the {@code Action} by returning false.<br/>
- * <br/>
- * {@code Action} and state modifications will not be persisted along the
- * {@code Middleware} chain. If this is a requirement, cancel the current
- * dispatch after dispatching a new {@code Action} instead.<br/>
- * <br/>
- * 
+ * of the {@code Action} by returning false. {@code Action} and state
+ * modifications will not be persisted along the {@code Middleware} chain. If
+ * this is a requirement, cancel the current dispatch after dispatching a new
+ * {@code Action} instead.
+ *
  * <pre>
- * Middleware redispatch = (a, s) -> {
+ * Middleware redispatch = (a, s) -&gt; {
  * 	if (a.getType().equals("REDISPATCH_ME")) {
  * 		AppStateStore.instance().dispatch(Action.create("NEW_ACTION"));
  * 		return false;
@@ -46,7 +44,7 @@ import com.saylorsolutions.fnstate4j.State;
  * };
  * </pre>
  *
- * @author Doug Saylor <doug@saylorsolutions.com>
+ * @author Doug Saylor (doug at saylorsolutions.com)
  *
  */
 @FunctionalInterface
@@ -67,7 +65,7 @@ public interface Middleware {
 	 */
 	public boolean process(Action action, State state);
 
-	default Middleware andThen(final Middleware other) {
+	public default Middleware andThen(final Middleware other) {
 		Objects.requireNonNull(other, "Cannot merge null middleware");
 
 		return (a, s) -> {
@@ -77,7 +75,7 @@ public interface Middleware {
 		};
 	}
 
-	static Middleware combine(final Middleware first, final Middleware... middlewares) {
+	public static Middleware combine(final Middleware first, final Middleware... middlewares) {
 		if (first == null)
 			return NO_OP;
 		return Arrays.stream(middlewares).filter(m -> m != null).reduce(first, (m1, m2) -> m1.andThen(m2));
