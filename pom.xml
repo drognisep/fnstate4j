@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.saylorsolutions</groupId>
 	<artifactId>fnstate4j</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 
 	<name>Functional State for Java</name>
 	<description>Creates a Java port of base Redux functionality </description>
@@ -21,6 +21,15 @@
 	<scm>
 		<url>https://github.com/drognisep/fnstate4j</url>
 	</scm>
+
+	<developers>
+		<developer>
+			<name>Joseph D. Saylor</name>
+			<email>support@saylorsolutions.com</email>
+			<organization>Saylor Solutions</organization>
+			<organizationUrl>https://saylorsolutions.com</organizationUrl>
+		</developer>
+	</developers>
 
 	<distributionManagement>
 		<snapshotRepository>
