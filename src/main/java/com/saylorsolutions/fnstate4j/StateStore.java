@@ -193,7 +193,7 @@ public class StateStore {
 
 	/**
 	 * Removes the specified {@code Middleware} from the chain, if it exists.
-	 * 
+	 *
 	 * @param middleware
 	 */
 	public void removeMiddleware(Middleware middleware) {
@@ -201,6 +201,22 @@ public class StateStore {
 		synchronized (this.middlewares) {
 			this.middlewares.remove(middleware);
 			this.rootMiddleware = Middleware.combine(this.middlewares);
+		}
+	}
+
+	/**
+	 * Final class to hold a final instance of the {@code StateStore}.
+	 *
+	 * @author Doug Saylor (doug at saylorsolutions.com)
+	 *
+	 */
+	public static final class Global extends StateStore {
+		private static final class Holder {
+			private static final Global instance = new Global();
+		}
+
+		public static StateStore instance() {
+			return Holder.instance;
 		}
 	}
 }
