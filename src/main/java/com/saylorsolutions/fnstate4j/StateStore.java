@@ -205,18 +205,22 @@ public class StateStore {
 	}
 
 	/**
-	 * Final class to hold a final instance of the {@code StateStore}.
+	 * Enum to hold a final instance of the global {@code StateStore}.
 	 *
 	 * @author Doug Saylor (doug at saylorsolutions.com)
-	 *
+	 * @see https://stackoverflow.com/q/43662578
 	 */
-	public static final class Global extends StateStore {
-		private static final class Holder {
-			private static final Global instance = new Global();
+	public static enum Global {
+		INSTANCE;
+
+		private final StateStore instance;
+		private Global() {
+			// Perhaps should support methods of recovering persisted state.
+			instance = new StateStore();
 		}
 
 		public static final StateStore instance() {
-			return Holder.instance;
+			return INSTANCE.instance;
 		}
 	}
 }
