@@ -215,7 +215,7 @@ public class StateStore {
 			private static final Global instance = new Global();
 		}
 
-		public static StateStore instance() {
+		public static final StateStore instance() {
 			return Holder.instance;
 		}
 	}
