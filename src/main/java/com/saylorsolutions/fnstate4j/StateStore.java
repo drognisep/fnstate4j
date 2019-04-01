@@ -215,7 +215,6 @@ public class StateStore {
 
 		private final StateStore instance;
 		private Global() {
-			// Perhaps should support methods of recovering persisted state.
 			instance = new StateStore();
 		}
 

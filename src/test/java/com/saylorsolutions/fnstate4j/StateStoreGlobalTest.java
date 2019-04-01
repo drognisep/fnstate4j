@@ -15,14 +15,6 @@ public class StateStoreGlobalTest {
 	}
 
 	@Test(expected = IllegalAccessException.class)
-	public void resistsNewInstanceReflection() throws IllegalArgumentException, IllegalAccessException {
-		Class<StateStore.Global> global = StateStore.Global.class;
-		final Field[] holderFields = global.getDeclaredFields();
-		holderFields[0].setAccessible(true);
-		holderFields[0].set(null, new StateStore());
-	}
-
-	@Test(expected = IllegalAccessException.class)
 	public void cannotResetInstance() throws IllegalArgumentException, IllegalAccessException {
 		final Class<? extends Global> clazz = StateStore.Global.INSTANCE.getClass();
 		final Field instance = clazz.getDeclaredFields()[0];
