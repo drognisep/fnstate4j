@@ -50,7 +50,7 @@ public class StateStore {
 	private Middleware rootMiddleware;
 	private Set<Middleware> middlewares = new HashSet<>();
 	private Map<UUID, Consumer<State>> subscribers = new HashMap<>();
-	private boolean nonBlocking;
+	private boolean nonBlocking = false; // Defaults to be blocking
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public StateStore(State initialState, Reducer rootReducer, Middleware rootMiddleware, boolean nonBlocking) {
@@ -79,6 +79,10 @@ public class StateStore {
 		this(new State());
 	}
 
+	/**
+	 * Dispatches an {@code Action} while respecting the value of {@code isNonBlocking}.
+	 * @param action The action to be dispatched.
+	 */
 	public void dispatch(final Action action) {
 		internalDispatch(action, nonBlocking);
 	}
@@ -87,12 +91,24 @@ public class StateStore {
 	 * Dispatches an {@code Action} and blocks the calling thread, regardless of the
 	 * value of {@code StateStore#nonBlocking}.
 	 *
-	 * @param action
+	 * @param action The action to be dispatched.
 	 * @see StateStore#isNonBlocking()
 	 * @see StateStore#setNonBlocking(boolean)
 	 */
 	public void blockingDispatch(final Action action) {
 		internalDispatch(action, false);
+	}
+
+	/**
+	 * Dispatches an {@code Action} and uses an executor thread, regardless of the
+	 * value of {@code StateStore#nonBlocking}.
+	 *
+	 * @param action The action to be dispatched.
+	 * @see StateStore#isBlocking()
+	 * @see StateStore#setNonBlocking(boolean)
+	 */
+	public void concurrentDispatch(final Action action) {
+		internalDispatch(action, true);
 	}
 
 	private void internalDispatch(final Action action, final boolean nonBlocking) {
@@ -144,6 +160,13 @@ public class StateStore {
 		return this.nonBlocking;
 	}
 
+	/**
+	 * @return Whether subscribers are called by the same thread that initiates a state change.
+	 */
+	public boolean isBlocking() {
+		return !isNonBlocking();
+	}
+
 	public void setNonBlocking(boolean nonBlocking) {
 		this.nonBlocking = nonBlocking;
 	}
@@ -154,7 +177,7 @@ public class StateStore {
 
 	/**
 	 * Adds a new {@code Reducer} to the chain. Does not allow duplicates.
-	 * 
+	 *
 	 * @param reducer
 	 */
 	public void addReducer(Reducer reducer) {
@@ -167,7 +190,7 @@ public class StateStore {
 
 	/**
 	 * Removes the specified {@code Reducer} from the chain, if it exists.
-	 * 
+	 *
 	 * @param reducer
 	 */
 	public void removeReducer(Reducer reducer) {
@@ -180,7 +203,7 @@ public class StateStore {
 
 	/**
 	 * Adds a new {@code Middleware} to the chain. Does not allow duplicates.
-	 * 
+	 *
 	 * @param middleware
 	 */
 	public void addMiddleware(Middleware middleware) {

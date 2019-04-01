@@ -89,6 +89,13 @@ public class StateStoreTest {
 	}
 
 	@Test
+	public final void testDuplicateSubscribe() {
+		final Consumer<State> no_op = (s) -> {};
+		UUID expected = this.store.subscribe(no_op);
+		assertSame(expected, this.store.subscribe(no_op));
+	}
+
+	@Test
 	public final void testUnsubscribeUUID() {
 		UUID id = this.store.subscribe(INSTANCE_FIELD_UPDATE_SUBSCRIBER);
 		this.store.unsubscribe(id);
