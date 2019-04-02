@@ -68,7 +68,7 @@ public class StateStore {
 	}
 
 	public StateStore(State initialState, Reducer rootReducer, Middleware rootMiddleware) {
-		this(initialState, rootReducer, rootMiddleware, true);
+		this(initialState, rootReducer, rootMiddleware, false);
 	}
 
 	public StateStore(State initialState) {
@@ -114,7 +114,8 @@ public class StateStore {
 	private void internalDispatch(final Action action, final boolean nonBlocking) {
 		if (this.rootMiddleware.process(action, this.state)) {
 			synchronized (this.state) {
-				this.state = this.rootReducer.reduce(action, this.state);
+				final State oldState = this.state;
+				this.state = this.rootReducer.reduce(action, oldState);
 				if (nonBlocking) {
 					this.subscribers.forEach((u, c) -> executor.execute(() -> c.accept(this.state)));
 				} else {
