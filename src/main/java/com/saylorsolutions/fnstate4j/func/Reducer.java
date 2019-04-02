@@ -43,7 +43,7 @@ public interface Reducer {
 	 * Combine multiple {@code Reducer} instances into a single chain.
 	 *
 	 * @param first       The base {@code Reducer}, may not be null.
-	 * @param middlewares 0..n instances to be combined with {@code first}.
+	 * @param others 0..n instances to be combined with {@code first}.
 	 * @return The created chain, or {@code NO_OP} if the parameters are not valid.
 	 * @see Reducer#NO_OP
 	 */
