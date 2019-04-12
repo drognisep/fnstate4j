@@ -23,12 +23,16 @@ import static java.lang.String.format;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.saylorsolutions.fnstate4j.Action;
 import com.saylorsolutions.fnstate4j.State;
+
+import io.vavr.collection.List;
 
 public class MiddlewareTest {
 	private static final String TEST1_TYPE = "TYPE1";
@@ -72,10 +76,31 @@ public class MiddlewareTest {
 	}
 
 	@Test
+	public void testCombineCollectionNegative() {
+		Middleware test1 = Middleware.combine((Collection<Middleware>)null);
+		Middleware test2 = Middleware.combine(Collections.emptyList());
+		Middleware test3 = Middleware.combine(List.<Middleware>of(null, null).toJavaList());
+
+		assertSame(Middleware.NO_OP, test1);
+		assertSame(Middleware.NO_OP, test2);
+		assertSame(Middleware.NO_OP, test3);
+	}
+
+	@Test
 	public void testCombineMultiples() {
 		assertFalse(Middleware.combine(truthy, falsy).process(testAction, testState));
 		assertFalse(Middleware.combine(falsy, truthy).process(testAction, testState));
 		assertTrue(Middleware.combine(truthy, truthy).process(testAction, testState));
+	}
+
+	@Test
+	public void testCombineMultiplesNegative() {
+		Middleware mw = (a, s) -> true;
+		Middleware test1 = Middleware.combine(null, mw);
+		Middleware test2 = Middleware.combine(mw, (Middleware[])null);
+
+		assertSame(Middleware.NO_OP, test1);
+		assertSame(mw, test2);
 	}
 
 	@Test

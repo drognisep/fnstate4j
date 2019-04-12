@@ -39,14 +39,24 @@ public interface Reducer {
 		return (a, s) -> other.reduce(a, reduce(a, s));
 	}
 
+	/**
+	 * Combine multiple {@code Reducer} instances into a single chain.
+	 *
+	 * @param first       The base {@code Reducer}, may not be null.
+	 * @param others 0..n instances to be combined with {@code first}.
+	 * @return The created chain, or {@code NO_OP} if the parameters are not valid.
+	 * @see Reducer#NO_OP
+	 */
 	public static Reducer combine(Reducer first, Reducer... others) {
 		if (first == null)
 			return NO_OP;
+		if(others == null)
+			return first;
 		return Arrays.stream(others).filter(r -> r != null).reduce(first, (r1, r2) -> r1.andThen(r2));
 	}
 
 	public static Reducer combine(Collection<Reducer> coll) {
-		if (coll == null)
+		if (coll == null || coll.isEmpty())
 			return NO_OP;
 		return coll.stream().filter(r -> r != null).reduce(NO_OP, (r1, r2) -> r1.andThen(r2));
 	}

@@ -28,16 +28,14 @@ import java.util.Optional;
  *
  * @author Doug Saylor (doug at saylorsolutions.com)
  */
-public class Action {
-	private String type;
-	private Optional<Object> payload;
-	private Class<?> clazz;
+public final class Action {
+	private final String type;
+	private final Optional<Object> payload;
 
 	private Action(String type, Object payload) {
 		Objects.requireNonNull(type);
 		this.type = type;
 		this.payload = Optional.ofNullable(payload);
-		this.clazz = this.payload.isPresent() ? this.payload.get().getClass() : null;
 	}
 
 	/**
@@ -50,8 +48,8 @@ public class Action {
 	 * @return A newly created, immutable {@code Action}.
 	 */
 	public static Action create(String type, Object payload) {
-		final String typeParm = Objects.requireNonNull(type, "'type' parameter must not be null").trim();
-		if (typeParm.isEmpty()) {
+		Objects.requireNonNull(type, "'type' parameter must not be null");
+		if (type.trim().isEmpty()) {
 			throw new IllegalArgumentException("'type' parameter must not be empty or entirely whitespace");
 		}
 		return new Action(type, payload);
@@ -76,7 +74,7 @@ public class Action {
 	}
 
 	public Class<?> getPayloadClass() {
-		return clazz;
+		return this.payload.isPresent() ? this.payload.get().getClass() : null;
 	}
 
 	/**
@@ -99,9 +97,10 @@ public class Action {
 	 */
 	public boolean payloadAssignableTo(Class<?> clazz) {
 		Objects.requireNonNull(clazz, "Can't compare the payload Class to a null Class");
-		if (this.clazz == null)
+		final Class<?> payloadClass = getPayloadClass();
+		if (payloadClass == null)
 			return true;
-		return clazz.isAssignableFrom(this.clazz);
+		return clazz.isAssignableFrom(payloadClass);
 	}
 
 	public boolean hasPayload() {

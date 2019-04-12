@@ -23,12 +23,16 @@ package com.saylorsolutions.fnstate4j.func;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.saylorsolutions.fnstate4j.Action;
 import com.saylorsolutions.fnstate4j.State;
+
+import io.vavr.collection.List;
 
 public class ReducerTest {
 	private static final String actionType = "INC";
@@ -61,9 +65,28 @@ public class ReducerTest {
 	}
 
 	@Test
+	public void testReducerCombineCollectionNegative() {
+		Reducer test1 = Reducer.combine((Collection<Reducer>)null);
+		Reducer test2 = Reducer.combine(Collections.emptyList());
+		Reducer test3 = Reducer.combine(List.<Reducer>of(null, null).toJavaList());
+		assertSame(Reducer.NO_OP, test1);
+		assertSame(Reducer.NO_OP, test2);
+		assertSame(Reducer.NO_OP, test3);
+	}
+
+	@Test
 	public void testReducerCombine() {
 		State reducedState = Reducer.combine(increment, increment).reduce(Action.create(actionType), state);
 		assertEquals(Integer.valueOf(2), reducedState.getOrElse(stateKey, Integer.valueOf(77)));
+	}
+
+	@Test
+	public void testReducerCombineNegative() {
+		final Reducer reducer = (a, s) -> s;
+		Reducer test1 = Reducer.combine(null, reducer);
+		Reducer test2 = Reducer.combine(reducer, (Reducer[])null);
+		assertSame(Reducer.NO_OP, test1);
+		assertSame(reducer, test2);
 	}
 
 	@Test

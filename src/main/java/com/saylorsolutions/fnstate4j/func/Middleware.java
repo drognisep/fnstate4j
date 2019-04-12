@@ -75,14 +75,24 @@ public interface Middleware {
 		};
 	}
 
+	/**
+	 * Combine multiple {@code Middleware} instances into a single chain.
+	 *
+	 * @param first       The base {@code Middleware}, may not be null.
+	 * @param middlewares 0..n instances to be combined with {@code first}.
+	 * @return The created chain, or {@code NO_OP} if the parameters are not valid.
+	 * @see Middleware#NO_OP
+	 */
 	public static Middleware combine(final Middleware first, final Middleware... middlewares) {
 		if (first == null)
 			return NO_OP;
+		if(middlewares == null)
+			return first;
 		return Arrays.stream(middlewares).filter(m -> m != null).reduce(first, (m1, m2) -> m1.andThen(m2));
 	}
 
 	public static Middleware combine(Collection<Middleware> coll) {
-		if (coll == null)
+		if (coll == null || coll.isEmpty())
 			return NO_OP;
 		return coll.stream().filter(m -> m != null).reduce(NO_OP, (m1, m2) -> m1.andThen(m2));
 	}

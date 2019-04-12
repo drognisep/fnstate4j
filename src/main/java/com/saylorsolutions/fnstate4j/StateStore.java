@@ -20,7 +20,6 @@ package com.saylorsolutions.fnstate4j;
  * #L%
  */
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -44,31 +44,31 @@ import com.saylorsolutions.fnstate4j.func.Reducer;
  *
  */
 public class StateStore {
-	private State state = new State();
-	private Reducer rootReducer;
-	private Set<Reducer> reducers = new HashSet<>();
-	private Middleware rootMiddleware;
-	private Set<Middleware> middlewares = new HashSet<>();
-	private Map<UUID, Consumer<State>> subscribers = new HashMap<>();
-	private boolean nonBlocking;
-	private ExecutorService executor = Executors.newSingleThreadExecutor();
+	private transient State state;
+	private transient Reducer rootReducer;
+	private transient final Set<Reducer> reducers = new HashSet<>();
+	private transient Middleware rootMiddleware;
+	private transient final Set<Middleware> middlewares = new HashSet<>();
+	private transient final Map<UUID, Consumer<State>> subscribers = new ConcurrentHashMap<>();
+	private transient boolean nonBlocking; // Defaults to be blocking
+	private transient final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public StateStore(State initialState, Reducer rootReducer, Middleware rootMiddleware, boolean nonBlocking) {
 		super();
 
-		rootReducer = rootReducer == null ? Reducer.NO_OP : rootReducer;
-		rootMiddleware = rootMiddleware == null ? Middleware.NO_OP : rootMiddleware;
+		Reducer newReducer = rootReducer == null ? Reducer.NO_OP : rootReducer;
+		Middleware newMiddleware = rootMiddleware == null ? Middleware.NO_OP : rootMiddleware;
 
 		this.state = initialState;
-		this.rootReducer = rootReducer;
-		this.reducers.add(rootReducer);
-		this.rootMiddleware = rootMiddleware;
-		this.middlewares.add(rootMiddleware);
+		this.rootReducer = newReducer;
+		this.reducers.add(newReducer);
+		this.rootMiddleware = newMiddleware;
+		this.middlewares.add(newMiddleware);
 		this.nonBlocking = nonBlocking;
 	}
 
 	public StateStore(State initialState, Reducer rootReducer, Middleware rootMiddleware) {
-		this(initialState, rootReducer, rootMiddleware, true);
+		this(initialState, rootReducer, rootMiddleware, false);
 	}
 
 	public StateStore(State initialState) {
@@ -79,6 +79,10 @@ public class StateStore {
 		this(new State());
 	}
 
+	/**
+	 * Dispatches an {@code Action} while respecting the value of {@code isNonBlocking}.
+	 * @param action The action to be dispatched.
+	 */
 	public void dispatch(final Action action) {
 		internalDispatch(action, nonBlocking);
 	}
@@ -87,7 +91,7 @@ public class StateStore {
 	 * Dispatches an {@code Action} and blocks the calling thread, regardless of the
 	 * value of {@code StateStore#nonBlocking}.
 	 *
-	 * @param action
+	 * @param action The action to be dispatched.
 	 * @see StateStore#isNonBlocking()
 	 * @see StateStore#setNonBlocking(boolean)
 	 */
@@ -95,10 +99,23 @@ public class StateStore {
 		internalDispatch(action, false);
 	}
 
+	/**
+	 * Dispatches an {@code Action} and uses an executor thread, regardless of the
+	 * value of {@code StateStore#nonBlocking}.
+	 *
+	 * @param action The action to be dispatched.
+	 * @see StateStore#isBlocking()
+	 * @see StateStore#setNonBlocking(boolean)
+	 */
+	public void concurrentDispatch(final Action action) {
+		internalDispatch(action, true);
+	}
+
 	private void internalDispatch(final Action action, final boolean nonBlocking) {
 		if (this.rootMiddleware.process(action, this.state)) {
 			synchronized (this.state) {
-				this.state = this.rootReducer.reduce(action, this.state);
+				final State oldState = this.state;
+				this.state = this.rootReducer.reduce(action, oldState);
 				if (nonBlocking) {
 					this.subscribers.forEach((u, c) -> executor.execute(() -> c.accept(this.state)));
 				} else {
@@ -144,6 +161,13 @@ public class StateStore {
 		return this.nonBlocking;
 	}
 
+	/**
+	 * @return Whether subscribers are called by the same thread that initiates a state change.
+	 */
+	public boolean isBlocking() {
+		return !isNonBlocking();
+	}
+
 	public void setNonBlocking(boolean nonBlocking) {
 		this.nonBlocking = nonBlocking;
 	}
@@ -154,7 +178,7 @@ public class StateStore {
 
 	/**
 	 * Adds a new {@code Reducer} to the chain. Does not allow duplicates.
-	 * 
+	 *
 	 * @param reducer
 	 */
 	public void addReducer(Reducer reducer) {
@@ -167,7 +191,7 @@ public class StateStore {
 
 	/**
 	 * Removes the specified {@code Reducer} from the chain, if it exists.
-	 * 
+	 *
 	 * @param reducer
 	 */
 	public void removeReducer(Reducer reducer) {
@@ -180,7 +204,7 @@ public class StateStore {
 
 	/**
 	 * Adds a new {@code Middleware} to the chain. Does not allow duplicates.
-	 * 
+	 *
 	 * @param middleware
 	 */
 	public void addMiddleware(Middleware middleware) {
@@ -193,7 +217,7 @@ public class StateStore {
 
 	/**
 	 * Removes the specified {@code Middleware} from the chain, if it exists.
-	 * 
+	 *
 	 * @param middleware
 	 */
 	public void removeMiddleware(Middleware middleware) {
@@ -201,6 +225,21 @@ public class StateStore {
 		synchronized (this.middlewares) {
 			this.middlewares.remove(middleware);
 			this.rootMiddleware = Middleware.combine(this.middlewares);
+		}
+	}
+
+	/**
+	 * Enum to hold a final instance of the global {@code StateStore}. See https://stackoverflow.com/q/43662578.
+	 *
+	 * @author Doug Saylor (doug at saylorsolutions.com)
+	 */
+	public static enum Global {
+		INSTANCE;
+
+		public final StateStore instance = new StateStore();
+
+		public static final StateStore instance() {
+			return INSTANCE.instance;
 		}
 	}
 }
